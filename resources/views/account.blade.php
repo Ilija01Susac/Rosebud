@@ -1,9 +1,8 @@
-@extends('layouts.layout')
+@extends('layouts.app')
 
-@section('title')
-  Account
-@endsection
-
-@section('account')
+@section('content')
   <h1>Account</h1>
+  {{ Auth::user()->username }}
+</br>
+  {{ Auth::user()->email }}
 @endsection

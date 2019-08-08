@@ -16,7 +16,7 @@ Route::get('/', 'HomeController@index')->name('home');
 
 Route::get('/account', function(){
   return view('account');
-});
+})->name('account');
 
-Route::get('/movie', 'MoviesController@getMovie');
-Route::get('/fresh', 'MoviesController@getFreshMovies');
+Route::get('/movie', 'MovieController@getMovie');
+Route::get('/fresh', 'MovieController@getFreshMovies');
