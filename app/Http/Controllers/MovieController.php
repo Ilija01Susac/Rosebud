@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use Collective\Html\Eloquent\FormAccessible;
 use Illuminate\Http\Request;
 
 class MovieController extends Controller
@@ -28,19 +29,20 @@ class MovieController extends Controller
         CURLOPT_POSTFIELDS => "{}",
       ));
 
-      $freshMovies = json_decode(curl_exec($curl));
+      $data = json_decode(curl_exec($curl));
       $err = curl_error($curl);
-      dd($freshMovies);
+  //    dd($freshMovies);
       curl_close($curl);
 
       if ($err) {
         return "cURL Error #:" . $err;
       } else {
-        return $freshMovies;
+        return $data;
       }
   }
 
-    public function getMovie(){
+    public function getMovie(Request $request){
+    //  dd($request->genre);
       $API = 'a0744e299206697fb6f98e07344c50f5';
       $lang =  '&language=en-US';
       $sort = '&sort_by=popularity.desc';
@@ -48,18 +50,28 @@ class MovieController extends Controller
       $page = '&page=1';
       $date = '&primary_release_date.gte=1990-01-01&primary_release_date.lte=1999-12-31';
       $vote = '&vote_average.gte=6';
-      $genre = '&with_genres=28';
+      $genre = '&with_genres='.$request->genre;
 
       $link = "https://api.themoviedb.org/3/discover/movie?api_key=".$API.$lang.$sort.$adult.$page.$date.$vote.$genre;
 
       $movie = $this->getData($link);
-      return view('movie', compact('movie'));
+      $randomNumber = rand( 1, $movie->total_pages);
+      $randomNumberMovie = rand(0, 19);
+
+      $randomPage = '&page='.$randomNumber;
+      $newLink = "https://api.themoviedb.org/3/discover/movie?api_key=".$API.$lang.$sort.$adult.$randomPage.$date.$vote.$genre;
+      $randomMovieList = $this->getData($newLink);
+
+      $radnomMovie = $randomMovieList->results[$randomNumberMovie];
+    //  dd($radnomMovie);
+
+      return view('movie', compact('radnomMovie'));
     }
 
     public function getFreshMovies(){
       $link = "https://api.themoviedb.org/3/movie/popular?api_key=a0744e299206697fb6f98e07344c50f5&language=en-US&page=1";
 
-      $movie = $this->getData($link);
+      $freshMovies = $this->getData($link);
         return view('freshMovies', compact('freshMovies'));
     }
 }

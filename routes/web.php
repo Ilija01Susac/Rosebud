@@ -19,4 +19,6 @@ Route::get('/account', function(){
 })->name('account');
 
 Route::get('/movie', 'MovieController@getMovie');
+Route::post('/movie','MovieController@getMovie');
+
 Route::get('/fresh', 'MovieController@getFreshMovies');
