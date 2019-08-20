@@ -164,7 +164,11 @@ class MovieController extends Controller
       Session::put('release_date', $randomMovie->release_date);
       Session::put('poster_path', $randomMovie->poster_path);
       Session::put('primary_genre', $randomMovie->genre_ids[0]);
-      Session::put('secondary_genre', $randomMovie->genre_ids[1]);
+      if($randomMovie->genre_ids[1]){
+        Session::put('secondary_genre', $randomMovie->genre_ids[1]);
+      }else{
+        Session::put('secondary_genre', 0);
+    }
     }
 
 }

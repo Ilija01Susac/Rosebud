@@ -4,21 +4,21 @@
   <div class="container">
   <h1 class="title">Edit Account</h1>
 
-  <form method="POST" action="/account/{{{$user->id}}}">
+  <form method="POST" action="/account/password/{{{$user->id}}}">
     {{ method_field('PATCH') }}
     {{ csrf_field() }}
 
     <div class="field">
-      <label class="label" for="username">Username</label>
+      <label class="label" for="password">New Password</label>
       <div class="control">
-        <input type="text" class="input" name="username" placeholder="Username" value="{{ $user->username }}" required>
+        <input type="password" class="input" name="password" placeholder="New Password" >
       </div>
     </div>
 </br>
     <div class="field">
-      <label class="label" for="email">Email</label>
+      <label class="label" for="verify_password">Repeat new Password</label>
       <div class="control">
-        <input type="text" class="input" name="email" placeholder="Email" value="{{ $user->email }}" >
+        <input type="password" class="input" name="verify_password" placeholder="Verify Password">
       </div>
     </div>
 
@@ -34,12 +34,9 @@
 </br>
     <div class="field">
       <div class="control">
-        <button type="submit" class="button is-link">Edit account data</button>
-        <a class="button is-success" href="{{ route('accountEditPassword', auth()->user()->id) }}">Change Password</a>
+        <button type="submit" class="button is-link">Save new Password</button>
       </div>
     </div>
-
   </form>
-
 </div>
 @endsection

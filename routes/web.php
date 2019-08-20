@@ -14,9 +14,13 @@
 Auth::routes();
 Route::get('/', 'HomeController@index')->name('home');
 
+//show user data and edit
 Route::get('/account/{user_id}', 'AccountController@show')->name('account');
 Route::get('/account/edit/{user_id}', 'AccountController@edit')->name('accountEdit');
 Route::patch('/account/{user_id}', 'AccountController@update')->name('accountUpdate');
+//edit password
+Route::get('/account/edit/password/{user_id}', 'AccountController@editPassword')->name('accountEditPassword');
+Route::patch('/account/password/{user_id}', 'AccountController@updatePassword')->name('accountUpdatePassword');
 
 
 //Route::get('/movie', 'MovieController@getMovie');
