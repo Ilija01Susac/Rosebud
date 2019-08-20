@@ -4,12 +4,14 @@ namespace App\Http\Controllers;
 
 use Collective\Html\Eloquent\FormAccessible;
 use Illuminate\Http\Request;
+use Session;
+use App\Movie;
 
 class MovieController extends Controller
 {
   public function __construct()
   {
-    //  $this->middleware('auth');
+    $this->middleware('auth');
   }
 
 
@@ -42,36 +44,127 @@ class MovieController extends Controller
   }
 
     public function getMovie(Request $request){
-    //  dd($request->genre);
+      $yearLimits = $this->getYear($request->year);
+      $voteAverage = $this->getVoteAverage($request->quality);
+
       $API = 'a0744e299206697fb6f98e07344c50f5';
-      $lang =  '&language=en-US';
+      $lang = ''; //'&language=en-US';
       $sort = '&sort_by=popularity.desc';
       $adult = '&include_adult=false';
       $page = '&page=1';
-      $date = '&primary_release_date.gte=1990-01-01&primary_release_date.lte=1999-12-31';
-      $vote = '&vote_average.gte=6';
+      $date = '&primary_release_date.gte='.$yearLimits['from'].'-01-01&primary_release_date.lte='.$yearLimits['to'].'-12-31';
+      $vote = '&vote_average.gte='.$voteAverage['from'].'&vote_average-lte='.$voteAverage['to'];
       $genre = '&with_genres='.$request->genre;
 
       $link = "https://api.themoviedb.org/3/discover/movie?api_key=".$API.$lang.$sort.$adult.$page.$date.$vote.$genre;
 
       $movie = $this->getData($link);
       $randomNumber = rand( 1, $movie->total_pages);
-      $randomNumberMovie = rand(0, 19);
 
       $randomPage = '&page='.$randomNumber;
       $newLink = "https://api.themoviedb.org/3/discover/movie?api_key=".$API.$lang.$sort.$adult.$randomPage.$date.$vote.$genre;
       $randomMovieList = $this->getData($newLink);
 
+      $arraySize = count($randomMovieList->results);
+      $randomNumberMovie = rand(0, $arraySize-1);
       $radnomMovie = $randomMovieList->results[$randomNumberMovie];
     //  dd($radnomMovie);
-
+      $this->saveInSession($radnomMovie);
       return view('movie', compact('radnomMovie'));
+    }
+
+    public function saveMovie(){
+      $Movie = new Movie();
+      $Movie->movie_id= Session::get('id');
+      $Movie->title= Session::get('title');
+      $Movie->vote_average= Session::get('vote_average');
+      $Movie->vote_count= Session::get('vote_count');
+      $Movie->original_title= Session::get('original_title');
+      $Movie->overview= Session::get('overview');
+      $Movie->release_date= Session::get('release_date');
+      $Movie->poster_path= Session::get('poster_path');
+      $Movie->primary_genre= Session::get('primary_genre');
+      $Movie->secondary_genre= Session::get('secondary_genre');
+      $Movie->user_id = auth()->user()->id;
+      $Movie->save();
+
+      return redirect()->route('home');
     }
 
     public function getFreshMovies(){
       $link = "https://api.themoviedb.org/3/movie/popular?api_key=a0744e299206697fb6f98e07344c50f5&language=en-US&page=1";
-
       $freshMovies = $this->getData($link);
-        return view('freshMovies', compact('freshMovies'));
+      return view('freshMovies', compact('freshMovies'));
     }
+
+
+    public function getYear($year){
+      switch ($year) {
+    case "90s":
+        $date['from'] = 1900;
+        $date['to'] = 1939;
+        break;
+    case "94s":
+        $date['from'] = 1940;
+        $date['to'] = 1959;
+        break;
+    case "96s":
+        $date['from'] = 1960;
+        $date['to'] = 1969;
+        break;
+    case "97s":
+        $date['from'] = 1970;
+        $date['to'] = 1979;
+        break;
+    case "80s":
+        $date['from'] = 1980;
+        $date['to'] = 1989;
+        break;
+    case "99s":
+        $date['from'] = 1990;
+        $date['to'] = 1999;
+        break;
+    case "20s":
+        $date['from'] = 2000;
+        $date['to'] = date('Y');
+        break;
+    default:
+        $date['from'] = 1960;
+        $date['to'] = date('Y');
+        ;
+      }
+    return $date;
+    }
+
+    public function getVoteAverage($quality){
+      switch ($quality) {
+        case "Good":
+          $voteAverage = array("from" => 7.5,"to" => 10);
+          break;
+        case "Mediocre":
+          $voteAverage = array("from" => 5,"to" => 7.5);
+          break;
+        case "Bad":
+          $voteAverage = array("from" => 1,"to" => 5);
+          break;
+        default:
+          $voteAverage = array("from" => 6,"to" => 9.5);
+
+      }
+      return $voteAverage;
+    }
+
+    public function saveInSession($randomMovie){
+      Session::put('title', $randomMovie->title);
+      Session::put('id', $randomMovie->id);
+      Session::put('vote_average', $randomMovie->vote_average);
+      Session::put('vote_count', $randomMovie->vote_count);
+      Session::put('original_title', $randomMovie->original_title);
+      Session::put('overview', $randomMovie->overview);
+      Session::put('release_date', $randomMovie->release_date);
+      Session::put('poster_path', $randomMovie->poster_path);
+      Session::put('primary_genre', $randomMovie->genre_ids[0]);
+      Session::put('secondary_genre', $randomMovie->genre_ids[1]);
+    }
+
 }

@@ -32,7 +32,7 @@ class GenreController extends Controller
           $genres = $this->getData();
 
           foreach ($genres->genres as $key => $genre) {
-            $Genre= new Genre();
+            $Genre = new Genre();
             $Genre->id= $genre->id;
             $Genre->genre_name= $genre->name;
             $Genre->save();

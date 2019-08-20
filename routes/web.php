@@ -14,11 +14,15 @@
 Auth::routes();
 Route::get('/', 'HomeController@index')->name('home');
 
-Route::get('/account', function(){
-  return view('account');
-})->name('account');
+Route::get('/account/{user_id}', 'AccountController@show')->name('account');
+Route::get('/account/edit/{user_id}', 'AccountController@edit')->name('accountEdit');
+Route::patch('/account/{user_id}', 'AccountController@update')->name('accountUpdate');
 
-Route::get('/movie', 'MovieController@getMovie');
+
+//Route::get('/movie', 'MovieController@getMovie');
 Route::post('/movie','MovieController@getMovie');
+//Route::match(['get','post'], '/movie','MovieController@getMovie');
+Route::get('/movie/save', 'MovieController@saveMovie');
+Route::get('/watchlist', 'WatchlistController@show')->name('watchlist');
 
 Route::get('/fresh', 'MovieController@getFreshMovies');

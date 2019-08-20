@@ -26,7 +26,6 @@ class HomeController extends Controller
     {
       $genreData = \App\Genre::all();
       $genreItems = json_decode($genreData);
-    //  dd($genreItems);
       return view('home')->with('genreItems', $genreItems);
     }
 }

@@ -1,8 +1,10 @@
 @extends('layouts.app')
 
 @section('content')
-  <h1>Account</h1>
-  {{ Auth::user()->username }}
+  <h1 class="title">Account</h1>
+  {{$user->username}}
 </br>
-  {{ Auth::user()->email }}
+  {{ $user->email }}
+
+  <button type='button' onclick="window.location='{{ route('accountEdit', auth()->user()->id) }}'">Edit</button>
 @endsection

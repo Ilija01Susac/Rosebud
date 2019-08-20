@@ -18,6 +18,7 @@
 
     <!-- Styles -->
     <link href="{{ asset('css/app.css') }}" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bulma/0.7.5/css/bulma.min.css">
 </head>
 <body>
     <div id="app">
@@ -44,10 +45,10 @@
                                 </a>
 
                                 <div class="dropdown-menu dropdown-menu-right" aria-labelledby="navbarDropdown">
-                                  <a class="dropdown-item" href="#">
+                                  <a class="dropdown-item" href="/watchlist">
                                       {{ __('Watchlist') }}
                                   </a>
-                                  <a class="dropdown-item" href="{{ route('account') }}">
+                                  <a class="dropdown-item" href="{{ route('account', auth()->user()->id) }}">
                                       {{ __('Account details') }}
                                   </a>
                                     <a class="dropdown-item" href="{{ route('logout') }}"
