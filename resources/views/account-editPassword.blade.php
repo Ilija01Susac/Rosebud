@@ -1,10 +1,10 @@
-@extends('layouts.app')
+@extends('layouts.layout')
 
 @section('content')
   <div class="container">
   <h1 class="title">Edit Account</h1>
 
-  <form method="POST" action="/account/password/{{{$user->id}}}">
+  <form method="POST" action="/account/{{{$user->id}}}/password">
     {{ method_field('PATCH') }}
     {{ csrf_field() }}
 

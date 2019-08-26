@@ -47,9 +47,22 @@
 /* HOME view style */
 .selection{
   padding-top: 180px;
-
 }
 
+/* Movie box*/
+
+#movieBox{
+  width: 500px;
+  height: 400px;
+  background-color: white;
+  color: black;
+}
+
+
+ #button{
+  height: 50px;
+  width: 500px;
+}
 
 
 html {

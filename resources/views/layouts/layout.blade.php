@@ -1,47 +1,69 @@
 <!DOCTYPE html>
 <html lang="{{ str_replace('_', '-', app()->getLocale()) }}">
-  <head>
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+    <!-- CSRF Token -->
     <meta name="csrf-token" content="{{ csrf_token() }}">
+
     <title>{{ config('app.name', 'Rosebud') }}</title>
 
-    <meta name="viewport" content="width=device-width,initial-scale=1">
-    <link rel="stylesheet" href="css/styles.css">
-    <script src="js/responsive-nav.js"></script>
-  </head>
-  <body>
+    <!-- Scripts -->
+    <script src="{{ asset('js/app.js') }}" defer></script>
 
-    <header>
-      <a href="#home" class="logo" data-scroll>Fixed Nav</a>
-      <nav class="nav-collapse">
-        <ul>
-          <li class="menu-item active"><a href="#home" data-scroll>Home</a></li>
-          <li class="menu-item"><a href="#about" data-scroll>About</a></li>
-          <li class="menu-item"><a href="#projects" data-scroll>Projects</a></li>
-          <li class="menu-item"><a href="#blog" data-scroll>Blog</a></li>
-          <li class="menu-item"><a href="http://www.google.com" target="_blank">Google</a></li>
-        </ul>
-      </nav>
-    </header>
+    <!-- Fonts -->
+    <link rel="dns-prefetch" href="//fonts.gstatic.com">
+    <link href="https://fonts.googleapis.com/css?family=Nunito" rel="stylesheet">
 
-    <section id="home">
-      <h1>Fixed Nav</h1>
-      <p>The code and examples are hosted on GitHub and can be <a href="https://github.com/adtile/fixed-nav">found from here</a>. Read more about the approach from&nbsp;<a href="http://blog.adtile.me/2014/03/03/responsive-fixed-one-page-navigation/">our&nbsp;blog</a>.</p>
-    </section>
+    <!-- Styles -->
+    <link href="{{ asset('css/app.css') }}" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bulma/0.7.5/css/bulma.min.css">
+</head>
+<body>
 
-    <section id="about">
-      <h1>About</h1>
-    </section>
-
-    <section id="projects">
-      <h1>Projects</h1>
-    </section>
-
-    <section id="blog">
-      <h1>Blog</h1>
-    </section>
-
-    <script src="js/fastclick.js"></script>
-    <script src="js/scroll.js"></script>
-    <script src="js/fixed-responsive-nav.js"></script>
-  </body>
-</html>
+    <section class="hero is-dark is-bold  is-fullheight">
+      <!-- Hero head: will stick at the top -->
+      <div class="hero-head">
+        <nav class="navbar">
+          <div class="container">
+            <div class="navbar-brand">
+              <a class="navbar-item" href="/">
+                <img src="https://bulma.io/images/bulma-type-white.png" alt="Logo">
+              </a>
+              <span class="navbar-burger burger" data-target="navbarMenuHeroA">
+                <span></span>
+                <span></span>
+                <span></span>
+              </span>
+            </div>
+            <div id="navbarMenuHeroA" class="navbar-menu">
+              <div class="navbar-end">
+                <a class="navbar-item {{ (request()->is('account*')) ? 'is-active' : '' }}" href="{{ route('account', auth()->user()->id) }}">
+                  {{ Auth::user()->username }}
+                </a>
+                <a class="navbar-item {{ (request()->is('watchlist*')) ? 'is-active' : '' }}" href="/watchlist">
+                  {{ __('Watchlist') }}
+                </a>
+                <span class="navbar-item">
+                  <form id="logout-form" action="{{ route('logout') }}" method="POST" style="display: none;">
+                      @csrf
+                  </form>
+                  <a class="button is-outlined" href="{{ route('logout') }}"
+                     onclick="event.preventDefault();
+                                   document.getElementById('logout-form').submit();">
+                      {{ __('Logout') }}
+                  </a>
+                </span>
+              </div>
+            </div>
+          </div>
+        </nav>
+      </div>
+<main class="hero-body">
+  <div id="app" class="container">
+  @yield('content')
+</div>
+</main>
+</section>
+</body>
