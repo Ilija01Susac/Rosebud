@@ -50,20 +50,30 @@
 }
 
 /* Movie box*/
-
-#movieBox{
-  width: 500px;
-  height: 400px;
-  background-color: white;
-  color: black;
+.movieImage{
+    width:300px;
+    float:left;
 }
-
+.movieDetails{
+  width: 1000px;
+  height: 400px;
+  color: white;
+}
 
  #button{
+  margin-top: 15px;
   height: 50px;
-  width: 500px;
+  width: 300px;
+  float: right;
 }
 
+/*Account info  */
+.accountInfo{
+  font-size: 20px;
+}
+#label{
+  color:white;
+}
 
 html {
   font-family: sans-serif;
@@ -263,6 +273,7 @@ th {
 label {
   display: inline-block;
   margin-bottom: 0.5rem;
+
 }
 
 button {

@@ -9,14 +9,14 @@
     {{ csrf_field() }}
 
     <div class="field">
-      <label class="label" for="password">New Password</label>
+      <label class="label" id="label" for="password">New Password</label>
       <div class="control">
         <input type="password" class="input" name="password" placeholder="New Password" >
       </div>
     </div>
 </br>
     <div class="field">
-      <label class="label" for="verify_password">Repeat new Password</label>
+      <label class="label" id="label" for="verify_password">Repeat new Password</label>
       <div class="control">
         <input type="password" class="input" name="verify_password" placeholder="Verify Password">
       </div>

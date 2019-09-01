@@ -6,6 +6,9 @@ use Collective\Html\Eloquent\FormAccessible;
 use Illuminate\Http\Request;
 use Session;
 use App\Movie;
+use App\Genre;
+use App\User;
+use Redirect;
 
 class MovieController extends Controller
 {
@@ -33,7 +36,6 @@ class MovieController extends Controller
 
       $data = json_decode(curl_exec($curl));
       $err = curl_error($curl);
-  //    dd($freshMovies);
       curl_close($curl);
 
       if ($err) {
@@ -44,6 +46,8 @@ class MovieController extends Controller
   }
 
     public function getMovie(Request $request){
+      $watchlistSize = $this->limitWatchlist();
+      if($watchlistSize >= 5){ return redirect()->route('home')->withErrors(['Limit', 'You reached watchlist limit of 5 movies.']); }
       $yearLimits = $this->getYear($request->year);
       $voteAverage = $this->getVoteAverage($request->quality);
 
@@ -59,18 +63,25 @@ class MovieController extends Controller
       $link = "https://api.themoviedb.org/3/discover/movie?api_key=".$API.$lang.$sort.$adult.$page.$date.$vote.$genre;
 
       $movie = $this->getData($link);
+
+      if(empty($movie->results)){
+        return redirect()->route('home')->withErrors(['No result', 'There are no movies by criteria you searched.']);
+      }
+
       $randomNumber = rand( 1, $movie->total_pages);
 
       $randomPage = '&page='.$randomNumber;
       $newLink = "https://api.themoviedb.org/3/discover/movie?api_key=".$API.$lang.$sort.$adult.$randomPage.$date.$vote.$genre;
       $randomMovieList = $this->getData($newLink);
 
+
       $arraySize = count($randomMovieList->results);
       $randomNumberMovie = rand(0, $arraySize-1);
-      $radnomMovie = $randomMovieList->results[$randomNumberMovie];
-    //  dd($radnomMovie);
-      $this->saveInSession($radnomMovie);
-      return view('movie', compact('radnomMovie'));
+      $randomMovie = $randomMovieList->results[$randomNumberMovie];
+      $this->saveInSession($randomMovie);
+      $genreNames = $this->getGenres($randomMovie->genre_ids);
+      $crew = $this->getMovieCredits($randomMovie->id, $API);
+      return view('movie', compact('randomMovie', 'genreNames', 'crew'));
     }
 
     public function saveMovie(){
@@ -82,13 +93,15 @@ class MovieController extends Controller
       $Movie->original_title= Session::get('original_title');
       $Movie->overview= Session::get('overview');
       $Movie->release_date= Session::get('release_date');
-      $Movie->poster_path= Session::get('poster_path');
+      if(Session::get('poster_path') == null){
+        $Movie->poster_path= '';
+      }else{ $Movie->poster_path= Session::get('poster_path');  }
       $Movie->primary_genre= Session::get('primary_genre');
       $Movie->secondary_genre= Session::get('secondary_genre');
       $Movie->user_id = auth()->user()->id;
       $Movie->save();
 
-      return redirect()->route('home');
+      return redirect()->route('watchlist');
     }
 
     public function getFreshMovies(){
@@ -164,11 +177,53 @@ class MovieController extends Controller
       Session::put('release_date', $randomMovie->release_date);
       Session::put('poster_path', $randomMovie->poster_path);
       Session::put('primary_genre', $randomMovie->genre_ids[0]);
-      if($randomMovie->genre_ids[1]){
+      if(!empty($randomMovie->genre_ids[1])){
         Session::put('secondary_genre', $randomMovie->genre_ids[1]);
       }else{
         Session::put('secondary_genre', 0);
     }
     }
 
+    public function getGenres($genre_ids){
+      $genre['primary'] = \DB::table('genres')->where('id', $genre_ids[0])->pluck('genre_name');
+      if(!empty($genre_ids[1])){
+        $genre['secondary'] = \DB::table('genres')->where('id', $genre_ids[1])->pluck('genre_name');
+      }else{
+        $genre['secondary'] = array(' ');
+      }
+      return $genre;
+    }
+
+    public function getMovieCredits($movie_id, $API){
+      $link = "https://api.themoviedb.org/3/movie/".$movie_id."/credits?api_key=".$API;
+      $credits = $this->getData($link);
+      $directors = $this->getDirector($credits);
+      $actors = $this->getActors($credits);
+      $cast = ['Directors'=> $directors, 'Actors' => $actors];
+      return $cast;
+    }
+
+
+    public function getDirector($credits){
+      $directors= array();
+      foreach ($credits->crew as $crewMember) {
+        if($crewMember->job == "Director"){
+          $directors[] = $crewMember;
+        }
+      }return $directors;
+    }
+
+    public function getActors($credits){
+      $actors = array();
+      foreach ($credits->cast as $actor) {
+          $actors[] = $actor;
+      } return $actors;
+    }
+
+    public function limitWatchlist(){
+      $user_id = auth()->user()->id;
+      $user = User::find($user_id);
+      $watchlistSize = count($user->movies);
+      return $watchlistSize;
+    }
 }

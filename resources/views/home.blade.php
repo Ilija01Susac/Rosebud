@@ -48,7 +48,16 @@
 
                 <input type="submit" class="button is-danger is-inverted is-fullwidth is-large " value="Submit">
               </form>
-
+              <br>
+              @if ($errors->any())
+              <div class="alert alert-danger">
+                <ul>
+                  @foreach ($errors->all() as $error)
+                    <li> {{ $error }} </li>
+                  @endforeach
+                </ul>
+              </div>
+              @endif
               </div>
           </div>
       </div>

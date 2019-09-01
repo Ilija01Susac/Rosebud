@@ -9,14 +9,14 @@
     {{ csrf_field() }}
 
     <div class="field">
-      <label class="label" for="username">Username</label>
+      <label class="label" id="label" for="username">Username</label>
       <div class="control">
         <input type="text" class="input" name="username" placeholder="Username" value="{{ $user->username }}" required>
       </div>
     </div>
 </br>
     <div class="field">
-      <label class="label" for="email">Email</label>
+      <label class="label" id="label" for="email">Email</label>
       <div class="control">
         <input type="text" class="input" name="email" placeholder="Email" value="{{ $user->email }}" >
       </div>
