@@ -69,15 +69,15 @@ class MovieController extends Controller
       }
 
       $randomNumber = rand( 1, $movie->total_pages);
-
       $randomPage = '&page='.$randomNumber;
       $newLink = "https://api.themoviedb.org/3/discover/movie?api_key=".$API.$lang.$sort.$adult.$randomPage.$date.$vote.$genre;
       $randomMovieList = $this->getData($newLink);
 
-
       $arraySize = count($randomMovieList->results);
       $randomNumberMovie = rand(0, $arraySize-1);
       $randomMovie = $randomMovieList->results[$randomNumberMovie];
+
+
       $this->saveInSession($randomMovie);
       $genreNames = $this->getGenres($randomMovie->genre_ids);
       $crew = $this->getMovieCredits($randomMovie->id, $API);
@@ -85,6 +85,10 @@ class MovieController extends Controller
     }
 
     public function saveMovie(){
+      $inWatchlist = $this->inWatchlist(Session::get('id'));
+      if($inWatchlist){
+        return redirect()->route('home')->withErrors(['Already in watchlist', 'Movie you selected is already in your watchlist.']);
+      }
       $Movie = new Movie();
       $Movie->movie_id= Session::get('id');
       $Movie->title= Session::get('title');
@@ -225,5 +229,11 @@ class MovieController extends Controller
       $user = User::find($user_id);
       $watchlistSize = count($user->movies);
       return $watchlistSize;
+    }
+
+    public function inWatchlist($movie_id){
+      $user_id = auth()->user()->id;
+      $savedMovie = \DB::table('movies')->where([['user_id','=' ,$user_id] , ['movie_id', '=',$movie_id]])->get();
+      if(count($savedMovie) == 1){ return true; }else{ return false; }
     }
 }
