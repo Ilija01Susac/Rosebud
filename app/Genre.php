@@ -9,4 +9,8 @@ class Genre extends Model
     protected $fillable = ['id', 'genre_name'];
     protected $table = 'genres';
     public $timestamps = false;
+
+    public function movies(){
+      return $this->hasOne('App\Movie');
+    }
 }

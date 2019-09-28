@@ -29,7 +29,7 @@
           <div class="container">
             <div class="navbar-brand">
               <a class="navbar-item" href="/">
-                <img src="https://bulma.io/images/bulma-type-white.png" alt="Logo">
+                <img src="{{asset('img/logo-8.png')}}" alt="Logo">
               </a>
               <span class="navbar-burger burger" data-target="navbarMenuHeroA">
                 <span></span>

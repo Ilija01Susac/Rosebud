@@ -59,6 +59,11 @@
   height: 400px;
   color: white;
 }
+.watchlistDetails{
+  width: 1000px;
+  height: 280px;
+  color: white;
+}
 
  #button{
   margin-top: 15px;
